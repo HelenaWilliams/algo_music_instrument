@@ -87,6 +87,7 @@ bpm.oninput = function() {
 nn.create('label')
   .content("Griftwood -- Ghost")
   .css(song_label)
+  .on('click', () => renderLyrics(0))
   .addTo('body');
 
 buildUI(griftPlayer, "Griftwood", 12, "grift");
@@ -111,6 +112,7 @@ document.write("<br><br>");
 nn.create('label')
   .content("The American Nightmare -- Ice Nine Kills")
   .css(song_label)
+  .on('click', () => renderLyrics(1))
   .addTo('body');
 
 buildUI(nightPlayer, "Nightmare", 12, "night");
@@ -135,6 +137,7 @@ document.write("<br><br>");
 nn.create('label')
   .content("Blow -- Eva Under Fire")
   .css(song_label)
+  .on('click', () => renderLyrics(2))
   .addTo('body');
 
 buildUI(blowPlayer, "Blow", 12, "blow");
@@ -205,5 +208,17 @@ function buildUI(player, song_name, length, id){
     .addTo('body');
 
   document.write('<input type="range" min="50" max="200" value="120" class="slider" style="position: relative; width: 10%; left: 45%;" id="'+id+'BPM"><br><br>');
+}
+
+document.write('<p id="lyrics" style="background-color: red; width: 30%; font-family: sans-serif; font-size: 15pt"></p>');
+const lyrics_list = [
+  "Suffering for the Lord is not an easy thing<br>Be it a conjuring<br>So ordained and adored, so immaculate<br>(Ooh) So worth the debt<br><br>I'm your rock baby, I won't back down<br>I'm your rock baby, ask yourself<br>(Ooh) Are you righteous?", 
+  "When night comes creeping<br>My cruel hand will rock you to sleep<br><br>I'm the American Nightmare with American dreams<br>Of counting the bodies while you count sheep<br>I'm the American Nightmare, yeah I'm living the dream<br>I'm slashing my way through the golden age of the silver scream", 
+  "Baby I'm about to blow, ticking like a time bomb<br>Ready to explode, hit you with my best shot<br>Got you in my sights, running for your life<br>Love is a liar<br>Re-re-ready, aim, fire, baby I'm about to blow"];
+
+function renderLyrics(selection){
+  var lyrics = document.getElementById("lyrics");
+  lyrics.innerHTML = lyrics_list[selection];
+  window.scrollTo(0, document.body.scrollHeight);
 }
 </script>
