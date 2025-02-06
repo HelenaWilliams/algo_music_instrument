@@ -49,7 +49,7 @@ let stop_button = {
 }
 
 nn.create('h1')
-  .content(`Music Mixer`)
+  .content(`clarity/cacophony`)
   .addTo('body')
 
 const spec = createSpectrum({ range: [0, 8000] });
@@ -204,7 +204,7 @@ function buildUI(player, song_name, length, id){
   nn.create('p')
     .content('Tempo: 120 bpm')
     .set("id", id+"TempTxt")
-    .css({"font-family": "sans-serif", "text-align": "center"})
+    .css({"font-family": "sans-serif", "text-align": "center", "font-weight": "20px"})
     .addTo('body');
 
   document.write('<input type="range" min="50" max="200" value="120" class="slider" style="position: relative; width: 10%; left: 45%;" id="'+id+'BPM"><br><br>');
