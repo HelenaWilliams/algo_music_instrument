@@ -25,13 +25,14 @@ let song_label = {
   "background-color": "red",
   "padding": "5px",
   "font-size": "20px",  
-  "font-family" : "'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif"
+  "font-family" : "'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif",
 }
 
 let play_button = {
   "background-color" : "maroon",
   "color" : "white",
   "height": "50",
+  "width": "5%",
   "margin": "2px",
   "border-style": "hidden",
   "border-radius" : "5px", 
@@ -156,10 +157,10 @@ blowBpm.oninput = function() {
 function playSample (player, id, i) {
   player.setLoopPoints(i*8, (i+1)*8);
   player.start(Tone.now(), (i*8) + Tone.now()%8);
-  var button = document.getElementById(id+i);
-  button.style.backgroundColor = "blue";
   var oldButton = document.getElementById(id+selecteds[id]);
   oldButton.style.backgroundColor = "maroon";
+  var button = document.getElementById(id+i);
+  button.style.backgroundColor = "blue";
   selecteds[id] = i;
 }
 
