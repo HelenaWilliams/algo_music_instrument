@@ -1,0 +1,208 @@
+<body></body>
+<script src="https://unpkg.com/tone"></script>
+<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://algorithmicmusic.online/js/create-spectrum.js"></script>
+<script src="https://algorithmicmusic.online/js/create-waveform.js"></script>
+<link rel="stylesheet" href="test.css">
+<script>
+/* global Tone, nn, d3, createWaveform, createSpectrum */
+
+Tone.Transport.bpm = 230;
+Tone.Transport.loopStart = 0;
+Tone.Transport.loopEnd = 8;
+
+// Build players
+const griftPlayer = buildPlayer('assets/GriftwoodSamples.m4a');
+const nightPlayer = buildPlayer('assets/NightmareSamples.m4a');
+const blowPlayer = buildPlayer('assets/BlowSamples.m4a');
+
+let selecteds = {"grift":0, "night":0, "blow":0};
+
+// CSS for interactive region
+let song_label = {
+  "margin": "5px",
+  "background-color": "red",
+  "padding": "5px",
+  "font-size": "20px",  
+  "font-family" : "'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif"
+}
+
+let play_button = {
+  "background-color" : "maroon",
+  "color" : "white",
+  "height": "50",
+  "margin": "2px",
+  "border-style": "hidden",
+  "border-radius" : "5px", 
+  "font-family" : "'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif"
+}
+
+let stop_button = {
+  "height": "75",
+  "width": "75",
+  "font-size": "20px",
+  "border-radius" : "5px",
+  "border-width" : "5px",
+  "font-family" : "'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif"
+}
+
+nn.create('h1')
+  .content(`Music Mixer`)
+  .addTo('body')
+
+const spec = createSpectrum({ range: [0, 8000] });
+griftPlayer.connect(spec);
+nightPlayer.connect(spec);
+blowPlayer.connect(spec);
+
+// Big Metronome Time
+
+nn.create('h2')
+  .content('Tempo: 120 bpm')
+  .set("id", "TempoText")
+  .css({"position": "absolute", "left": "80%", "top": "5vw", "font-family": "sans-serif"})
+  .addTo('body');
+
+document.write('<input type="range" min="50" max="200" value="120" class="slider" style="position: absolute; left: 75%; top: 10vw; width: 20%;" id="BPM"><br><br>');
+var bpm = document.getElementById("BPM");
+var tempoText = document.getElementById("TempoText");
+
+bpm.oninput = function() {
+  let scale = bpm.value/120; 
+  griftBpm.value = bpm.value;
+  griftText.innerHTML = "Tempo: "+griftBpm.value + " bpm"
+  griftPlayer.playbackRate = scale;
+  nightBpm.value = bpm.value;
+  nightText.innerHTML = "Tempo: "+nightBpm.value + " bpm"
+  nightPlayer.playbackRate = scale;
+  blowBpm.value = bpm.value;
+  blowText.innerHTML = "Tempo: "+blowBpm.value + " bpm"
+  blowPlayer.playbackRate = scale;
+  tempoText.innerHTML = "Tempo: "+bpm.value + " bpm"
+}
+
+// UI (to trigger play function)
+nn.create('label')
+  .content("Griftwood -- Ghost")
+  .css(song_label)
+  .addTo('body');
+
+buildUI(griftPlayer, "Griftwood", 12, "grift");
+
+var griftSlider = document.getElementById("griftVol");
+
+griftSlider.oninput = function() {
+  griftPlayer.volume.value = griftSlider.value;
+}
+
+var griftBpm = document.getElementById("griftBPM");
+var griftText = document.getElementById("griftTempTxt");
+
+griftBpm.oninput = function() {
+  var scale = griftBpm.value / 120;
+  griftPlayer.playbackRate = scale;
+  griftText.innerHTML = "Tempo: "+griftBpm.value + " bpm"
+}
+
+document.write("<br><br>");
+
+nn.create('label')
+  .content("The American Nightmare -- Ice Nine Kills")
+  .css(song_label)
+  .addTo('body');
+
+buildUI(nightPlayer, "Nightmare", 12, "night");
+
+var nightSlider = document.getElementById("nightVol");
+
+nightSlider.oninput = function() {
+  nightPlayer.volume.value = nightSlider.value;
+}
+
+var nightBpm = document.getElementById("nightBPM");
+var nightText = document.getElementById("nightTempTxt");
+
+nightBpm.oninput = function() {
+  var scale = nightBpm.value / 120;
+  nightPlayer.playbackRate = scale;
+  nightText.innerHTML = "Tempo: "+nightBpm.value + " bpm"
+}
+
+document.write("<br><br>");
+
+nn.create('label')
+  .content("Blow -- Eva Under Fire")
+  .css(song_label)
+  .addTo('body');
+
+buildUI(blowPlayer, "Blow", 12, "blow");
+
+var blowSlider = document.getElementById("blowVol");
+
+blowSlider.oninput = function() {
+  blowPlayer.volume.value = blowSlider.value;
+}
+
+var blowBpm = document.getElementById("blowBPM");
+var blowText = document.getElementById("blowTempTxt");
+
+blowBpm.oninput = function() {
+  var scale = blowBpm.value / 120;
+  blowPlayer.playbackRate = scale;
+  blowText.innerHTML = "Tempo: "+blowBpm.value + " bpm"
+}
+
+function playSample (player, id, i) {
+  player.setLoopPoints(i*8, (i+1)*8);
+  player.start(Tone.now(), (i*8) + Tone.now()%8);
+  var button = document.getElementById(id+i);
+  button.style.backgroundColor = "blue";
+  var oldButton = document.getElementById(id+selecteds[id]);
+  oldButton.style.backgroundColor = "maroon";
+  selecteds[id] = i;
+}
+
+function buildPlayer(file){
+  const Song = file;
+  const player = new Tone.Player(Song);
+  player.loop = true;
+  player.playbackRate = 1;
+  player.toDestination();
+  return(player);
+}
+
+function buildUI(player, song_name, length, id){
+  
+  for (let i = 0; i < length; i++) {
+    nn.create('button')
+      .content(song_name + i)
+      .css(play_button)
+      .set("id", id+i)
+      .set("class", id+"Button")
+      .addTo('body')
+      .on('click', () => playSample(player, id, i));
+  }
+
+  document.write('<input type="range" min="-50" max="10" value="2" class="slider" id="' + id + 'Vol">');
+
+  nn.create('button')
+    .content('Stop')
+    .css(stop_button)
+    .addTo('body')
+    .on('click', function() {
+      player.stop();
+      var test = document.getElementById(id+selecteds[id]);
+      test.style.backgroundColor = "maroon";
+      selecteds[id] = 0;
+    });
+  
+  nn.create('p')
+    .content('Tempo: 120 bpm')
+    .set("id", id+"TempTxt")
+    .css({"font-family": "sans-serif", "text-align": "center"})
+    .addTo('body');
+
+  document.write('<input type="range" min="50" max="200" value="120" class="slider" style="position: relative; width: 10%; left: 45%;" id="'+id+'BPM"><br><br>');
+}
+</script>
